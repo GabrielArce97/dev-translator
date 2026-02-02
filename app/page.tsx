@@ -1,65 +1,123 @@
-import Image from "next/image";
+'use client';
+
+import { useChat } from '@ai-sdk/react';
+import { useState } from 'react';
 
 export default function Home() {
+  const [targetLang, setTargetLang] = useState('Python');
+
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      api: '/api/translate',
+      body: { languageTo: targetLang },
+      onError: (err) => {
+        console.error('Error en el chat:', err);
+      },
+    });
+
+  const latestResponse =
+    messages.filter((m) => m.role === 'assistant').pop()?.content || '';
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="min-h-screen bg-gray-900 text-white p-8">
+      <h1 className="text-4xl font-extrabold text-center mb-10 tracking-tight">
+        Dev<span className="text-blue-500">Translator</span> 🚀
+      </h1>
+
+      {/* Selector de Lenguaje */}
+      <div className="flex justify-center mb-8">
+        <div className="relative">
+          <select
+            value={targetLang}
+            onChange={(e) => setTargetLang(e.target.value)}
+            className="appearance-none bg-gray-800 border border-gray-700 hover:border-blue-500 rounded-lg py-3 px-8 text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <option value="Python">Python</option>
+            <option value="JavaScript">JavaScript</option>
+            <option value="TypeScript">TypeScript</option>
+            <option value="Go">Go</option>
+            <option value="Rust">Rust</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+            <svg
+              className="fill-current h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+        {/* COLUMNA IZQUIERDA: Input */}
+        <div className="flex flex-col space-y-2">
+          <label className="font-semibold text-gray-300 ml-1">Tu Código:</label>
+          <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <textarea
+              className="flex-1 min-h-[400px] w-full p-5 bg-gray-800/50 border border-gray-700 rounded-xl font-mono text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none placeholder-gray-500" // <--- CAMBIO AQUÍ: Fondo oscuro y borde sutil
+              value={input}
+              onChange={handleInputChange}
+              placeholder="// Pega tu código aquí..."
+              spellCheck={false}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <button
+              type="submit"
+              disabled={isLoading || !input}
+              className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-xl transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20" // <--- CAMBIO AQUÍ: Botón azul vibrante
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    className="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Traduciendo...
+                </span>
+              ) : (
+                '✨ Traducir Código'
+              )}
+            </button>
+          </form>
         </div>
-      </main>
-    </div>
+
+        {/* COLUMNA DERECHA: Output */}
+        <div className="flex flex-col space-y-2">
+          <label className="font-semibold text-gray-300 ml-1">
+            Resultado ({targetLang}):
+          </label>
+          <div className="flex-1 min-h-[400px] w-full p-5 bg-black rounded-xl border border-gray-800 font-mono text-sm shadow-inner overflow-auto">
+            {latestResponse ? (
+              // Aquí usamos text-green-400 para que parezca código de terminal "matrix"
+              <pre className="text-green-400 whitespace-pre-wrap font-mono">
+                {latestResponse}
+              </pre>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-600 italic">
+                El código traducido aparecerá aquí...
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
