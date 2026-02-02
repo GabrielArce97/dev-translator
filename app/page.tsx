@@ -11,7 +11,7 @@ export default function Home() {
       api: '/api/translate',
       body: { languageTo: targetLang },
       onError: (err) => {
-        console.error('Error en el chat:', err);
+        console.error('Chat error:', err);
       },
     });
 
@@ -24,7 +24,7 @@ export default function Home() {
         Dev<span className="text-blue-500">Translator</span> 🚀
       </h1>
 
-      {/* Selector de Lenguaje */}
+      {/* Language Selector */}
       <div className="flex justify-center mb-8">
         <div className="relative">
           <select
@@ -51,22 +51,22 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-        {/* COLUMNA IZQUIERDA: Input */}
+        {/* LEFT COLUMN: Input */}
         <div className="flex flex-col space-y-2">
-          <label className="font-semibold text-gray-300 ml-1">Tu Código:</label>
+          <label className="font-semibold text-gray-300 ml-1">Your Code:</label>
           <form onSubmit={handleSubmit} className="flex flex-col h-full">
             <textarea
-              className="flex-1 min-h-[400px] w-full p-5 bg-gray-800/50 border border-gray-700 rounded-xl font-mono text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none placeholder-gray-500" // <--- CAMBIO AQUÍ: Fondo oscuro y borde sutil
+              className="flex-1 min-h-[400px] w-full p-5 bg-gray-800/50 border border-gray-700 rounded-xl font-mono text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none placeholder-gray-500"
               value={input}
               onChange={handleInputChange}
-              placeholder="// Pega tu código aquí..."
+              placeholder="// Paste your code here..."
               spellCheck={false}
             />
 
             <button
               type="submit"
               disabled={isLoading || !input}
-              className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-xl transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20" // <--- CAMBIO AQUÍ: Botón azul vibrante
+              className="mt-4 w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-6 rounded-xl transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -90,29 +90,29 @@ export default function Home() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  Traduciendo...
+                  Translating...
                 </span>
               ) : (
-                '✨ Traducir Código'
+                '✨ Translate Code'
               )}
             </button>
           </form>
         </div>
 
-        {/* COLUMNA DERECHA: Output */}
+        {/* RIGHT COLUMN: Output */}
         <div className="flex flex-col space-y-2">
           <label className="font-semibold text-gray-300 ml-1">
-            Resultado ({targetLang}):
+            Result ({targetLang}):
           </label>
           <div className="flex-1 min-h-[400px] w-full p-5 bg-black rounded-xl border border-gray-800 font-mono text-sm shadow-inner overflow-auto">
             {latestResponse ? (
-              // Aquí usamos text-green-400 para que parezca código de terminal "matrix"
+              // Using text-green-400 to look like "matrix" terminal code
               <pre className="text-green-400 whitespace-pre-wrap font-mono">
                 {latestResponse}
               </pre>
             ) : (
               <div className="h-full flex items-center justify-center text-gray-600 italic">
-                El código traducido aparecerá aquí...
+                The translated code will appear here...
               </div>
             )}
           </div>
